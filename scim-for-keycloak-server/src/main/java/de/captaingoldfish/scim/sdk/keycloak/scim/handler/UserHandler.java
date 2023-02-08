@@ -26,6 +26,7 @@ import de.captaingoldfish.scim.sdk.common.exceptions.ConflictException;
 import de.captaingoldfish.scim.sdk.common.exceptions.ResourceNotFoundException;
 import de.captaingoldfish.scim.sdk.common.resources.complex.Meta;
 import de.captaingoldfish.scim.sdk.common.resources.complex.Name;
+import de.captaingoldfish.scim.sdk.common.resources.multicomplex.MultiComplexNode;
 import de.captaingoldfish.scim.sdk.common.schemas.SchemaAttribute;
 import de.captaingoldfish.scim.sdk.keycloak.audit.ScimAdminEventBuilder;
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimUserAttributesEntity;
@@ -230,10 +231,12 @@ public class UserHandler extends ResourceHandler<CustomUser>
   {
     final String givenName = user.getName().flatMap(Name::getGivenName).orElse(null);
     final String familyName = user.getName().flatMap(Name::getFamilyName).orElse(null);
+    final String email = user.getEmails().stream().findFirst().flatMap(MultiComplexNode::getValue).orElse(null);
     final boolean userActive = user.isActive().orElse(false);
     userModel.setFirstName(givenName);
     userModel.setLastName(familyName);
     userModel.setEnabled(userActive);
+    userModel.setEmail(email);
 
     ScimUserAttributesEntity userAttributes = new ScimUserAttributesEntity();
     // order is important. The addScimValuestoDatabaseModel method relies on the userEntity being added afterwards
